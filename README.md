@@ -33,9 +33,39 @@ practices сюда не добавляются.
 ux-задач. помогает увидеть скрытое предположение, разделить образ продукта,
 модель и технологию
 
-## как использовать
+## установка
 
-положить папку нужного скилла туда, где агент ищет скиллы, или передать путь к
-его `skill.md` напрямую.
+### с автообновлением
+
+```bash
+mkdir -p ~/.local/share
+git clone --single-branch --depth 1 https://github.com/hronicasync/nodumbmode.git ~/.local/share/nodumbmode
+~/.local/share/nodumbmode/setup --host all --auto-update
+```
+
+нужны `git`, `bash` и `python 3`.
+
+`setup` ставит симлинки в codex и claude code. в начале сессии обновлятор не
+чаще раза в час проверяет `main`, делает только fast-forward и молча оставляет
+текущую версию при проблемах с сетью или локальных правках. в codex новый hook
+нужно один раз подтвердить через `/hooks`.
+
+обновить сразу:
+
+```bash
+~/.local/share/nodumbmode/bin/nodumbmode-update --force
+```
+
+### через skills cli
+
+```bash
+npx skills add hronicasync/nodumbmode -g -y -a codex -a claude-code --skill '*'
+```
+
+этот способ управляется самим `skills cli` и не ставит hook. обновление ручное:
+
+```bash
+npx skills update -g -y
+```
 
 в `skill.md` лежат основные правила, в `references/` — примеры и подробности.

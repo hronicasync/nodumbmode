@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+set -u
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+state_dir="${NODUMBMODE_STATE_DIR:-$HOME/.nodumbmode}"
+check_file="$state_dir/last-update-check"
+lock_dir="$state_dir/update.lock"
+ttl="${NODUMBMODE_UPDATE_TTL:-3600}"
+force=0
+quiet=0
+
+log() {
+  if [ "$quiet" -eq 0 ]; then
+    printf '%s\n' "$*"
+  fi
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --force) force=1; shift ;;
+    -q|--quiet) quiet=1; shift ;;
+    -h|--help)
+      echo "usage: nodumbmode-update [--force] [--quiet]"
+      exit 0
+      ;;
+    *) echo "unknown option: $1" >&2; exit 1 ;;
+  esac
+done
+
+case "$ttl" in
+  ''|*[!0-9]*) ttl=3600 ;;
+esac
+
+mkdir -p "$state_dir" 2>/dev/null || exit 0
+
+now="$(date +%s)"
+if [ "$force" -eq 0 ] && [ -f "$check_file" ]; then
+  last_check="$(cat "$check_file" 2>/dev/null || echo 0)"
+  case "$last_check" in ''|*[!0-9]*) last_check=0 ;; esac
+  if [ $((now - last_check)) -lt "$ttl" ]; then
+    exit 0
+  fi
+fi
+
+if ! mkdir "$lock_dir" 2>/dev/null; then
+  stale_lock="$(find "$lock_dir" -prune -mmin +10 2>/dev/null || true)"
+  if [ -z "$stale_lock" ]; then
+    exit 0
+  fi
+  rmdir "$lock_dir" 2>/dev/null || exit 0
+  mkdir "$lock_dir" 2>/dev/null || exit 0
+fi
+trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
+
+temp_check="$check_file.$$"
+printf '%s\n' "$now" > "$temp_check" 2>/dev/null || exit 0
+mv "$temp_check" "$check_file" 2>/dev/null || exit 0
+
+if ! git -C "$repo_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  log "nodumbmode: update skipped; install is not a git checkout"
+  exit 0
+fi
+
+if [ -n "$(git -C "$repo_root" status --porcelain 2>/dev/null)" ]; then
+  log "nodumbmode: update skipped; checkout has local changes"
+  exit 0
+fi
+
+if ! GIT_TERMINAL_PROMPT=0 git -C "$repo_root" \
+  -c http.lowSpeedLimit=1000 \
+  -c http.lowSpeedTime=5 \
+  fetch --quiet origin main >/dev/null 2>&1; then
+  log "nodumbmode: update check failed; keeping the current version"
+  exit 0
+fi
+
+local_commit="$(git -C "$repo_root" rev-parse HEAD 2>/dev/null || true)"
+remote_commit="$(git -C "$repo_root" rev-parse origin/main 2>/dev/null || true)"
+
+if [ -z "$local_commit" ] || [ -z "$remote_commit" ] || [ "$local_commit" = "$remote_commit" ]; then
+  log "nodumbmode is up to date"
+  exit 0
+fi
+
+if ! git -C "$repo_root" merge-base --is-ancestor "$local_commit" "$remote_commit"; then
+  log "nodumbmode: update skipped; local history diverged from origin/main"
+  exit 0
+fi
+
+old_short="$(git -C "$repo_root" rev-parse --short HEAD)"
+if ! git -C "$repo_root" merge --ff-only --quiet "$remote_commit" >/dev/null 2>&1; then
+  log "nodumbmode: update failed; keeping the current version"
+  exit 0
+fi
+new_short="$(git -C "$repo_root" rev-parse --short HEAD)"
+
+saved_host="all"
+if [ -f "$state_dir/host" ]; then
+  saved_host="$(cat "$state_dir/host" 2>/dev/null || echo all)"
+fi
+case "$saved_host" in codex|claude|all) ;; *) saved_host="all" ;; esac
+
+"$repo_root/setup" --host "$saved_host" --links-only --quiet >/dev/null 2>&1 || true
+log "nodumbmode updated: $old_short -> $new_short"
