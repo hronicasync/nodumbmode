@@ -35,17 +35,43 @@ ux-задач. помогает увидеть скрытое предполож
 
 ## установка
 
+нужен `node`. флаги: `-g` глобально, `-y` без вопросов, `--skill '*'` все скиллы,
+`-a` куда ставить.
+
+**claude code и codex сразу**
+
 ```bash
 npx skills@latest add hronicasync/nodumbmode -g -y -a claude-code -a codex --skill '*'
 ```
 
-ставит все скиллы глобально в claude code и codex. нужен `node`.
+**только claude code**
 
-обновление:
+```bash
+npx skills@latest add hronicasync/nodumbmode -g -y -a claude-code --skill '*'
+```
+
+**только codex**
+
+```bash
+npx skills@latest add hronicasync/nodumbmode -g -y -a codex --skill '*'
+```
+
+**выбрать вручную** — без `-a` и `-y` cli спросит, куда ставить и какие скиллы:
+
+```bash
+npx skills@latest add hronicasync/nodumbmode -g
+```
+
+`--all` не использовать: он пытается поставить во всех известных агентов, включая
+тех, кто не умеет глобальную установку, и валится с ошибками на каждом.
+
+## обновление
 
 ```bash
 npx skills@latest update -g -y
 ```
+
+тянет свежую версию из репы. переустанавливать не нужно — cli помнит источник.
 
 <details>
 <summary>если скиллы не появились в codex</summary>
