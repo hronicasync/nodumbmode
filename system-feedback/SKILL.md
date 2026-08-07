@@ -1,6 +1,6 @@
 ---
 name: system-feedback
-description: "Make sure every user action visibly reports its outcome, and that every state a screen can be in is designed. Use when implementing any action a user triggers (save, copy, delete, send, upload, sync); when building a screen that loads or can fail; when reviewing an interface that 'feels unresponsive' or 'unclear'; or when a user reports doing something twice because nothing happened. Do not use for visual polish, animation timing, or aesthetics — that is a different concern."
+description: "Проверить, понятно ли пользователю, что произошло после действия, и предусмотрены ли состояния загрузки, пустоты и ошибки. Использовать при реализации сохранения, копирования, удаления, отправки, загрузки и синхронизации; при создании экранов с асинхронными данными; и при разборе интерфейса, который кажется неотзывчивым или непонятным. Не использовать для визуальной полировки и эстетики."
 ---
 
 # system-feedback
@@ -12,7 +12,7 @@ description: "Make sure every user action visibly reports its outcome, and that 
 обратной связи — дефект поведения: человек не знает, сработало ли, и делает
 действие дважды.
 
-## Scope
+## Где применять
 
 - Применять при реализации **любого** действия: сохранение, копирование,
   удаление, отправка, загрузка, синхронизация.
@@ -21,7 +21,7 @@ description: "Make sure every user action visibly reports its outcome, and that 
 - Не применять для визуальной полировки, тайминга анимаций, эстетики — это
   другая работа.
 
-## Core Principles
+## Правила
 
 - **Действие без ответа — сломанное действие.** Даже если внутри всё
   отработало.
@@ -35,7 +35,7 @@ description: "Make sure every user action visibly reports its outcome, and that 
 - **Необратимое требует подтверждения; обратимое — отмены.** Подтверждение на
   всё подряд перестают читать.
 
-## Workflow
+## Порядок работы
 
 ### 1. Для каждого действия ответить: как человек поймёт, что оно сработало?
 
@@ -55,11 +55,12 @@ description: "Make sure every user action visibly reports its outcome, and that 
 
 ### 2. Для операции дольше мгновения — показать, что идёт
 
-Порог: примерно четверть секунды. Дольше — нужен признак работы, иначе интерфейс
-читается как зависший.
+Если задержка становится заметной — обычно после нескольких сотен миллисекунд —
+показать признак работы. Точный порог зависит от действия и платформы.
 
-Если операция длится больше пары секунд — показывать **прогресс**, а не просто
-крутилку: неизвестная длительность ощущается дольше, чем известная.
+Если операция длится больше пары секунд и прогресс можно честно оценить —
+показывать его. Если оценить нельзя, использовать индикатор и коротко объяснить,
+что именно происходит.
 
 ### 3. Спроектировать все состояния экрана
 
@@ -106,7 +107,7 @@ description: "Make sure every user action visibly reports its outcome, and that 
 
 Ответ «никак / не узнаю» на второй вопрос — дефект.
 
-## References
+## Подробнее
 
 - `references/01-heuristics.md` — эвристики, которые чаще всего нарушают
 - `references/02-checklist.md` — чеклист по типам действий
