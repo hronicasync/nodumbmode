@@ -35,37 +35,32 @@ ux-задач. помогает увидеть скрытое предполож
 
 ## установка
 
-### с автообновлением
-
 ```bash
-mkdir -p ~/.local/share
-git clone --single-branch --depth 1 https://github.com/hronicasync/nodumbmode.git ~/.local/share/nodumbmode
-~/.local/share/nodumbmode/setup --host all --auto-update
+npx skills@latest add hronicasync/nodumbmode -g -y -a claude-code -a codex --skill '*'
 ```
 
-нужны `git`, `bash` и `python 3`.
+ставит все скиллы глобально в claude code и codex. нужен `node`.
 
-`setup` ставит симлинки в codex и claude code. в начале сессии обновлятор не
-чаще раза в час проверяет `main`, делает только fast-forward и молча оставляет
-текущую версию при проблемах с сетью или локальных правках. в codex новый hook
-нужно один раз подтвердить через `/hooks`.
-
-обновить сразу:
+обновление:
 
 ```bash
-~/.local/share/nodumbmode/bin/nodumbmode-update --force
+npx skills@latest update -g -y
 ```
 
-### через skills cli
+<details>
+<summary>если скиллы не появились в codex</summary>
+
+`skills cli` кладёт файлы в `~/.agents/skills/`, но иногда не связывает их с
+codex. разово:
 
 ```bash
-npx skills add hronicasync/nodumbmode -g -y -a codex -a claude-code --skill '*'
+for s in nodumb ask-nodumb changelog-discipline system-feedback; do
+  ln -sfn ~/.agents/skills/$s ~/.codex/skills/$s
+done
 ```
 
-этот способ управляется самим `skills cli` и не ставит hook. обновление ручное:
+симлинки, а не копии — обновление через `skills update` подхватится само.
 
-```bash
-npx skills update -g -y
-```
+</details>
 
-в `skill.md` лежат основные правила, в `references/` — примеры и подробности.
+в `SKILL.md` лежат основные правила, в `references/` — примеры и подробности.
