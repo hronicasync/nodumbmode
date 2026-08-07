@@ -36,24 +36,24 @@ ux-задач. помогает увидеть скрытое предполож
 ## установка
 
 ```bash
-npx skills@latest add hronicasync/nodumbmode -g
+npx skills@latest add hronicasync/nodumbmode
 ```
 
-нужен `node`. cli найдёт установленных у тебя агентов и спросит, в какие
-поставить — claude code, codex, cursor, windsurf, continue и ещё десятки
-поддерживаются одинаково.
+нужен `node`. cli спросит, ставить глобально или только в текущий проект, найдёт
+установленных у тебя агентов и предложит выбрать, в какие поставить — claude
+code, codex, cursor, windsurf, continue и ещё десятки поддерживаются одинаково.
 
 <details>
 <summary>поставить без вопросов, в конкретных агентов</summary>
 
-если нужен неинтерактивный запуск — в ci или в скрипте — агентов надо назвать
-явно:
+если нужен неинтерактивный запуск — в ci или в скрипте — всё надо назвать явно:
 
 ```bash
 npx skills@latest add hronicasync/nodumbmode -g -y -a claude-code -a codex --skill '*'
 ```
 
-`-g` глобально, `-y` без вопросов, `--skill '*'` все скиллы, `-a` куда ставить.
+`-g` глобально (без него скиллы уедут в текущий проект, если запускать из папки
+с репозиторием), `-y` без вопросов, `--skill '*'` все скиллы, `-a` куда ставить.
 имя агента можно подсмотреть в списке, который cli показывает при обычной
 установке.
 
@@ -77,10 +77,17 @@ npx skills@latest add hronicasync/nodumbmode -g -y -a claude-code -a codex --ski
 ## обновление
 
 ```bash
-npx skills@latest update -g -y
+npx skills@latest update nodumb ask-nodumb changelog-discipline system-feedback
 ```
 
 тянет свежую версию из репы. переустанавливать не нужно — cli помнит источник.
+
+скиллы названы явно, потому что `skills update` без имён обновляет вообще все
+установленные скиллы, включая чужие. если это и нужно — короче:
+
+```bash
+npx skills@latest update
+```
 
 <details>
 <summary>если скиллы не появились у агента</summary>
