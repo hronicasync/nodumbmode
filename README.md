@@ -106,3 +106,7 @@ done
 </details>
 
 в `SKILL.md` лежат основные правила, в `references/` — примеры и подробности.
+
+---
+
+made by [elia hanumatori](https://t.me/hanumatori)
