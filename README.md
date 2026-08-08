@@ -38,7 +38,7 @@ ux-задач. помогает увидеть скрытое предполож
 ## установка
 
 ```bash
-npx skills@latest add hronicasync/nodumbmode
+npx skills@latest add hanumatori/nodumbmode
 ```
 
 нужен `node`. cli спросит, ставить глобально или только в текущий проект, найдёт
@@ -51,7 +51,7 @@ code, codex, cursor, windsurf, continue и ещё десятки поддерж�
 если нужен неинтерактивный запуск — в ci или в скрипте — всё надо назвать явно:
 
 ```bash
-npx skills@latest add hronicasync/nodumbmode -g -y -a claude-code -a codex --skill '*'
+npx skills@latest add hanumatori/nodumbmode -g -y -a claude-code -a codex --skill '*'
 ```
 
 `-g` глобально (без него скиллы уедут в текущий проект, если запускать из папки
